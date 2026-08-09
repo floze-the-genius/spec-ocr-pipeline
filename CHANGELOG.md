@@ -7,6 +7,11 @@ and releases use [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Simplified Chinese README and an explicit supported-model catalog covering OCR providers, local
+  model aliases, backends, platforms, disk sizes, and RAM/VRAM planning requirements.
+
 ## [0.1.0] - 2026-08-09
 
 ### Added
