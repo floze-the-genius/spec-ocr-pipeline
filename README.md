@@ -1,6 +1,6 @@
 # Spec OCR Pipeline
 
-[English](README.md) | [Русский](README.ru.md)
+[English](README.md) | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
 [![CI](https://github.com/floze-the-genius/spec-ocr-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/floze-the-genius/spec-ocr-pipeline/actions/workflows/ci.yml)
 [![Python 3.11–3.14](https://img.shields.io/badge/Python-3.11%E2%80%933.14-3776AB?logo=python&logoColor=white)](pyproject.toml)
@@ -102,6 +102,27 @@ See the platform-specific instructions for details:
 - [Linux installation](docs/installation/linux.md)
 - [macOS installation](docs/installation/macos.md)
 - [Windows installation](docs/installation/windows.md)
+
+## Supported OCR and AI models
+
+The project separates OCR extraction from semantic row mapping. You can use the core workflow
+without an AI model.
+
+| Layer | Supported choices | Supported environment |
+| --- | --- | --- |
+| PDF extraction | `pdf-text` (no model) | Linux, macOS, Windows; local |
+| Traditional OCR | Tesseract plus user-installed language data | Linux, macOS, Windows; local |
+| Visual document OCR | PaddleOCR-VL | macOS or Windows through WSL2; local model files |
+| Experimental visual OCR | dots.mocr from an audited local snapshot | Apple Silicon MLX or Linux/WSL2 Transformers runtime |
+| MLX mapping | Qwen3 8B/14B and Qwen3.6 35B A3B 4-bit | Apple Silicon macOS; 16-64 GB unified memory depending on model |
+| GGUF mapping | Qwen3.6 27B `qwen36-safe`, `qwen36-balanced`, `qwen36-quality` | Linux or Windows WSL2; llama.cpp; 32-48 GB RAM |
+| CUDA mapping | Qwen3 8B/14B, Qwen3-VL 8B, experimental Qwen3.6 27B GPTQ | Linux or Windows WSL2 with NVIDIA; 12-24 GB VRAM |
+| API mapping | User-selected OpenAI-compatible model or OpenCode model | Local loopback server or explicitly approved external provider |
+
+Run `spec-ocr models status --json` to inspect the managed local-model catalog on your machine.
+The full table with model aliases, upstream IDs, backends, disk sizes, RAM/VRAM requirements, and
+security boundaries is in [Providers and supported models](docs/providers.md). Models are not
+bundled, and a manifest entry is not a license or hardware-compatibility guarantee.
 
 ## Providers and privacy
 

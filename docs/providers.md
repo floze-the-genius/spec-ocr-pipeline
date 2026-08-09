@@ -1,4 +1,4 @@
-# Providers
+# Providers and supported models
 
 Provider choice determines accuracy, hardware requirements, and whether document data leaves the
 machine. Select providers explicitly in automated or privacy-sensitive workflows.
@@ -39,6 +39,43 @@ The local-AI support contract is deliberately narrow:
 
 There is no support claim for Intel Mac local AI, Windows ARM, or native-Windows CUDA. The core
 searchable-PDF and Excel path remains native on Linux, macOS, and Windows.
+
+## Managed local-model catalog
+
+`spec-ocr models status --json` reads the following catalog. Aliases are the stable values accepted
+by the model-management and setup commands. Disk and memory figures are planning minimums, not
+performance guarantees.
+
+| Primary alias | Upstream model ID | Backend | Supported platform | Minimum resources | Approx. disk |
+| --- | --- | --- | --- | --- | --- |
+| `paddleocr-vl` | `PaddlePaddle/PaddleOCR-VL` | Paddle | macOS, Windows WSL2 | Runtime-dependent | 3 GB |
+| `qwen3-8b` | `mlx-community/Qwen3-8B-4bit` | MLX | Apple Silicon macOS | 16 GB unified memory | 6 GB |
+| `qwen3-14b` | `mlx-community/Qwen3-14B-4bit` | MLX | Apple Silicon macOS | 32 GB unified memory | 10 GB |
+| `qwen3.6-35b-a3b` | `mlx-community/Qwen3.6-35B-A3B-4bit` | MLX-VLM | Apple Silicon macOS | 64 GB unified memory | 21 GB |
+| `qwen36-safe` | `bartowski/Qwen_Qwen3.6-27B-GGUF` IQ3_XXS | llama.cpp | Linux, Windows WSL2 | 32 GB RAM | 12.5 GB |
+| `qwen36-balanced` | `bartowski/Qwen_Qwen3.6-27B-GGUF` Q4_K_S | llama.cpp | Linux, Windows WSL2 | 48 GB RAM | 16.5 GB |
+| `qwen36-quality` | `bartowski/Qwen_Qwen3.6-27B-GGUF` Q4_K_M | llama.cpp | Linux, Windows WSL2 | 48 GB RAM | 17.6 GB |
+| `qwen3-8b-cuda` | `Qwen/Qwen3-8B` | vLLM | Linux, Windows WSL2 + NVIDIA | 12 GB VRAM | 8 GB |
+| `qwen3-14b-cuda` | `Qwen/Qwen3-14B` | vLLM | Linux, Windows WSL2 + NVIDIA | 16 GB VRAM | 12 GB |
+| `qwen3-vl-8b` | `Qwen/Qwen3-VL-8B-Instruct` | SGLang | Linux, Windows WSL2 + NVIDIA | 16 GB VRAM | 10 GB |
+| `qwen36-max` (experimental) | `groxaxo/Qwen3.6-27B-GPTQ-Pro-4bit` | vLLM | Linux, Windows WSL2 + NVIDIA | 48 GB RAM, 24 GB VRAM | 19 GB |
+
+Additional aliases are shown by `spec-ocr models status --json` and resolve to the same entries.
+The catalog is an integration manifest: models are downloaded separately, have their own licenses,
+and may change upstream. Review the exact revision, files, license, and checksums before operational
+use. Hardware-specific inference is supported only after a real synthetic smoke test on that
+machine.
+
+dots.mocr is intentionally not managed as an automatic remote download. Supply an audited local
+snapshot with `--dots-model`; use `--dots-trust-model-code` only after reviewing model-supplied
+Python. The commonly used Apple Silicon snapshot name is `mlx-community/dots.mocr-4bit`, but the
+CLI requires the resolved local directory rather than silently fetching it.
+
+`openai-compatible` is a protocol integration rather than a fixed model allowlist. A local vLLM,
+SGLang, or llama.cpp server may expose one of the managed models above or another model that can
+follow the mapping schema. `opencode` likewise uses the model configured in the user's own OpenCode
+account. Compatibility with an arbitrary API model is not implied until the synthetic mapping
+fixture succeeds and the returned rows pass quality review.
 
 ## Selection guide
 

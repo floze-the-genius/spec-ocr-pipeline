@@ -1,6 +1,6 @@
 # Spec OCR Pipeline
 
-[English](README.md) | [Русский](README.ru.md)
+[English](README.md) | [Русский](README.ru.md) | [简体中文](README.zh-CN.md)
 
 [![CI](https://github.com/floze-the-genius/spec-ocr-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/floze-the-genius/spec-ocr-pipeline/actions/workflows/ci.yml)
 [![Python 3.11–3.14](https://img.shields.io/badge/Python-3.11%E2%80%933.14-3776AB?logo=python&logoColor=white)](pyproject.toml)
@@ -107,6 +107,28 @@ spec-ocr process examples/demo/specification.pdf --output-dir demo-output --quot
 - [Установка на Linux](docs/installation/linux.md)
 - [Установка на macOS](docs/installation/macos.md)
 - [Установка на Windows](docs/installation/windows.md)
+
+## Поддерживаемые OCR- и AI-модели
+
+Извлечение текста и семантическое преобразование строк — разные этапы. Для основного сценария
+AI-модель не требуется.
+
+| Этап | Поддерживаемые варианты | Поддерживаемая среда |
+| --- | --- | --- |
+| Извлечение из PDF | `pdf-text` без модели | Linux, macOS, Windows; локально |
+| Классический OCR | Tesseract и установленные пользователем языковые данные | Linux, macOS, Windows; локально |
+| Визуальный OCR документов | PaddleOCR-VL | macOS или Windows через WSL2; локальные файлы модели |
+| Экспериментальный визуальный OCR | dots.mocr из проверенного локального snapshot | Apple Silicon MLX или Transformers в Linux/WSL2 |
+| MLX-маппинг | Qwen3 8B/14B и Qwen3.6 35B A3B 4-bit | Apple Silicon macOS; 16-64 ГБ объединённой памяти |
+| GGUF-маппинг | Qwen3.6 27B: `qwen36-safe`, `qwen36-balanced`, `qwen36-quality` | Linux или Windows WSL2; llama.cpp; 32-48 ГБ RAM |
+| CUDA-маппинг | Qwen3 8B/14B, Qwen3-VL 8B, экспериментальный Qwen3.6 27B GPTQ | Linux или Windows WSL2 с NVIDIA; 12-24 ГБ VRAM |
+| API-маппинг | Выбранная пользователем OpenAI-совместимая модель или модель OpenCode | Локальный loopback-сервер или явно разрешённый внешний провайдер |
+
+Команда `spec-ocr models status --json` показывает управляемый каталог локальных моделей для
+текущего компьютера. Полная таблица с aliases, исходными ID, backend, объёмом на диске,
+требованиями к RAM/VRAM и границами безопасности находится в разделе
+[«Провайдеры и поддерживаемые модели»](docs/providers.md). Модели не входят в репозиторий, а запись
+в manifest сама по себе не гарантирует лицензионную или аппаратную совместимость.
 
 ## Провайдеры и конфиденциальность
 
