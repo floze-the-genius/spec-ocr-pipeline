@@ -10,6 +10,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 import spec_pipeline.cli as cli_module
 from spec_pipeline.cli import _ai_rows_from_pdf_table_layer, _default_local_served_model, main
 from spec_pipeline.local.llama_runtime import LlamaCppRuntimeInfo
+from spec_pipeline.local.wsl_installer import windows_or_posix_project_path_to_wsl
 from spec_pipeline.ocr.base import OcrPage, OcrToken
 from spec_pipeline.ocr.paddle_runtime import PaddleRuntimeInfo
 from spec_pipeline.workflows.pdf_probe import PdfTextLayerProbe
@@ -439,7 +440,7 @@ def test_setup_wsl_default_project_dir_uses_current_directory(
     assert main(["setup-wsl", "--json"]) == 0
     payload = json.loads(capsys.readouterr().out)
 
-    assert Path(payload["project_path"]).resolve() == tmp_path.resolve()
+    assert payload["project_path"] == windows_or_posix_project_path_to_wsl(tmp_path)
 
 
 def test_windows_bootstrap_scripts_are_packaged() -> None:

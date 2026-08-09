@@ -175,7 +175,7 @@ def test_gpt_profile_explicit_auth_file_is_advanced_opt_in(tmp_path: Path) -> No
     assert any("расширенный opt-in" in warning for warning in plan.warnings)
     assert any("Не коммитьте" in warning for warning in plan.warnings)
     auth_script = _decode_wsl_b64_step(plan, "wsl.opencode.auth")
-    assert str(auth_file) in auth_script
+    assert windows_or_posix_project_path_to_wsl(auth_file) in auth_script
     assert ".spec-ocr-imported-auth.sha256" in auth_script
     assert "auth.json.bak" in auth_script
     assert "opencode auth login" not in auth_script
