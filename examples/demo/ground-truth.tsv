@@ -1,0 +1,7 @@
+page	section	subsection	pos	name	type_mark	code	manufacturer	unit	quantity	mass_kg	note
+1			1	Supply air duct 500x300 mm	GALV-0.7	D-500-300	Demo Air	pcs	4	12.5	Synthetic
+1			2	Round air duct 250 mm	RND-250	D-250	Demo Air	pcs	8	4.2	Synthetic
+1			3	Fire damper 500x300 mm	FD-90	FD-500-300	Demo Safety	pcs	2	9.8	Synthetic
+1			4	Ceiling diffuser 200 mm	CD-200	CD-200	Demo Air	pcs	12	1.1	Synthetic
+1			5	Inline fan 250 mm	IF-250	FAN-250	Demo Motion	pcs	1	8.4	Synthetic
+1			6	Flexible connector 500x300 mm	FC-500-300	FC-500-300	Demo Air	pcs	2	2.6	Synthetic

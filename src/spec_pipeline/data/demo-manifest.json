@@ -1,0 +1,15 @@
+{
+  "manifest_version": "1",
+  "name": "packaged-public-demo",
+  "samples": [
+    {
+      "sample_id": "demo",
+      "title": "Synthetic HVAC specification",
+      "source_pdf": "demo-specification.pdf",
+      "ground_truth_tsv": "demo-ground-truth.tsv",
+      "expected_xlsx": null,
+      "visual_xlsx": null,
+      "page_field": "page"
+    }
+  ]
+}

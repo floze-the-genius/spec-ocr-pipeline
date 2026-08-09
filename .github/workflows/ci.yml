@@ -1,0 +1,172 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+
+jobs:
+  core:
+    name: Core (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python-version: "3.11"
+          - os: ubuntu-latest
+            python-version: "3.12"
+          - os: ubuntu-latest
+            python-version: "3.13"
+          - os: ubuntu-latest
+            python-version: "3.14"
+          - os: windows-latest
+            python-version: "3.11"
+          - os: windows-latest
+            python-version: "3.13"
+          - os: macos-latest
+            python-version: "3.11"
+          - os: macos-latest
+            python-version: "3.13"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install development dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Check public repository contents
+        run: python scripts/check_public_tree.py
+
+      - name: Lint
+        run: python -m ruff check src tests scripts
+
+      - name: Check formatting
+        run: python -m ruff format --check src tests scripts
+
+      - name: Parse PowerShell scripts
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $allErrors = @()
+          foreach ($script in @("setup-windows.ps1", "process-pdf-windows.ps1")) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path -LiteralPath $script).Path,
+              [ref] $tokens,
+              [ref] $parseErrors
+            ) | Out-Null
+            foreach ($parseError in $parseErrors) {
+              $allErrors += "${script}:$($parseError.Extent.StartLineNumber): $($parseError.Message)"
+            }
+          }
+          if ($allErrors.Count -gt 0) {
+            $allErrors | ForEach-Object { Write-Host $_ }
+            throw "PowerShell AST parsing failed."
+          }
+
+      - name: Test
+        run: python -m pytest -q
+
+  packaging:
+    name: Build and installed-wheel smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install packaging tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Validate distribution metadata
+        run: python -m twine check dist/*
+
+      - name: Inspect distributions
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdist_path="$(find dist -maxdepth 1 -type f -name '*.tar.gz' -print -quit)"
+          wheel_path="$(find dist -maxdepth 1 -type f -name '*.whl' -print -quit)"
+          test -n "$sdist_path"
+          test -n "$wheel_path"
+          python scripts/check_public_tree.py \
+            --archive "$sdist_path" \
+            --archive "$wheel_path"
+
+      - name: Smoke-test the installed wheel outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          wheel_path="$(find "$GITHUB_WORKSPACE/dist" -maxdepth 1 -type f -name '*.whl' -print -quit)"
+          test -n "$wheel_path"
+
+          smoke_root="$(mktemp -d)"
+          python -m venv "$smoke_root/venv"
+          "$smoke_root/venv/bin/python" -m pip install --upgrade pip
+          "$smoke_root/venv/bin/python" -m pip install "$wheel_path"
+          cp "$GITHUB_WORKSPACE/examples/demo/expected-rows.jsonl" \
+            "$smoke_root/synthetic expected-rows.jsonl"
+
+          cd "$smoke_root"
+          cli="$smoke_root/venv/bin/spec-ocr"
+          "$cli" --version
+          "$cli" info
+          "$cli" doctor
+          "$cli" samples --validate --json
+          demo_pdf="$("$smoke_root/venv/bin/python" -c \
+            'from spec_pipeline.samples import load_sample_manifest; print(load_sample_manifest().samples[0].source_pdf)')"
+          "$cli" process "$demo_pdf" \
+            --output-dir "processed demo" \
+            --quote
+          "$cli" export-jsonl-xlsx "synthetic expected-rows.jsonl" \
+            --output "plain export.xlsx"
+          "$cli" export-kp-xlsx "synthetic expected-rows.jsonl" \
+            --output "kp export.xlsx"
+
+          test -s "plain export.xlsx"
+          test -s "kp export.xlsx"
+          test -s "processed demo/ocr.json"
+          test -s "processed demo/rows.jsonl"
+          test -s "processed demo/result.xlsx"
+          test -s "processed demo/quote.xlsx"
+          test -s "processed demo/run.json"
+          "$smoke_root/venv/bin/python" -c \
+            'import json; assert json.load(open("processed demo/run.json", encoding="utf-8"))["external_ai_used"] is False'

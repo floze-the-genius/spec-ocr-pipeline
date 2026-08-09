@@ -1,0 +1,151 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "spec-ocr-pipeline"
+dynamic = ["version"]
+description = "Cross-platform CLI for turning engineering specification PDFs into structured Excel workbooks"
+readme = "README.md"
+requires-python = ">=3.11,<3.15"
+license = { file = "LICENSE" }
+keywords = ["ocr", "pdf", "excel", "engineering", "specifications"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Office/Business",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "openpyxl>=3.1.0,<4",
+  "pdfminer.six>=20231228,<20270101",
+]
+
+[project.urls]
+Homepage = "https://github.com/floze-the-genius/spec-ocr-pipeline"
+Repository = "https://github.com/floze-the-genius/spec-ocr-pipeline"
+Issues = "https://github.com/floze-the-genius/spec-ocr-pipeline/issues"
+Documentation = "https://github.com/floze-the-genius/spec-ocr-pipeline#readme"
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2.0",
+  "numpy>=1.26.0,<3",
+  "Pillow>=10.0.0,<13",
+  "pypdfium2>=4.30.0,<6",
+  "pytest>=8.0.0",
+  "pytest-cov>=5.0.0",
+  "reportlab>=4.0.0,<5",
+  "ruff>=0.6.0",
+  "twine>=5.0.0",
+]
+ocr = [
+  "Pillow>=10.0.0,<13",
+  "pypdfium2>=4.30.0,<6",
+]
+local-models = [
+  "huggingface-hub>=0.30.0",
+]
+macos-local = [
+  "mlx-lm>=0.31.0; platform_system == 'Darwin' and platform_machine == 'arm64'",
+  "mlx-vlm>=0.4.4; platform_system == 'Darwin' and platform_machine == 'arm64'",
+  "torch>=2.8.0; platform_system == 'Darwin' and platform_machine == 'arm64'",
+  "torchvision>=0.23.0; platform_system == 'Darwin' and platform_machine == 'arm64'",
+  "huggingface-hub>=0.30.0",
+  "pyobjc-framework-Cocoa>=11.0; platform_system == 'Darwin'",
+  "pyobjc-framework-Quartz>=11.0; platform_system == 'Darwin'",
+]
+dots-mocr-transformers = [
+  "accelerate>=1.0.0",
+  "huggingface-hub>=0.30.0",
+  "Pillow>=10.0.0",
+  "qwen-vl-utils>=0.0.8",
+  "safetensors>=0.4.0",
+  "torch>=2.8.0",
+  "torchvision>=0.23.0",
+  "transformers>=4.51.0",
+  "pypdfium2>=4.30.0,<6",
+]
+local-ui = [
+  "rich>=13.9.0",
+  "InquirerPy>=0.3.4",
+]
+paddleocr-vl = [
+  "Pillow>=10.0.0,<13",
+  "paddleocr[doc-parser]>=3.0.0",
+  "paddlepaddle>=3.0.0; platform_system != 'Linux'",
+  "pypdfium2>=4.30.0,<6",
+]
+
+[project.scripts]
+spec-pipeline = "spec_pipeline.cli:main"
+spec-ocr = "spec_pipeline.cli:main"
+
+[tool.hatch.version]
+path = "src/spec_pipeline/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/spec_pipeline"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"examples/kp-template.xlsx" = "spec_pipeline/data/kp-template.xlsx"
+"examples/kp-header-template.xlsx" = "spec_pipeline/data/kp-header-template.xlsx"
+"examples/demo/specification.pdf" = "spec_pipeline/data/demo-specification.pdf"
+"examples/demo/expected-rows.jsonl" = "spec_pipeline/data/demo-rows.jsonl"
+"examples/demo/ground-truth.tsv" = "spec_pipeline/data/demo-ground-truth.tsv"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/scripts",
+  "/examples",
+  "/samples",
+  "/docs",
+  "/.github",
+  "/.editorconfig",
+  "/.gitattributes",
+  "/.gitignore",
+  "/INPUT_PDF",
+  "/OUTPUT_RESULTS",
+  "/setup-windows.cmd",
+  "/setup-windows.ps1",
+  "/process-pdf-windows.ps1",
+  "/START_HERE_WINDOWS.cmd",
+  "/INSTALL_GPT_WINDOWS.cmd",
+  "/INSTALL_LOCAL_QWEN_SAFE_WINDOWS.cmd",
+  "/PROCESS_INPUT_FOLDER_GPT_WINDOWS.cmd",
+  "/PROCESS_INPUT_FOLDER_WINDOWS.cmd",
+  "/PROCESS_PDF_GPT_WINDOWS.cmd",
+  "/PROCESS_PDF_WINDOWS.cmd",
+  "/try-cli.sh",
+  "/README.md",
+  "/README.ru.md",
+  "/LICENSE",
+  "/CHANGELOG.md",
+  "/CONTRIBUTING.md",
+  "/CODE_OF_CONDUCT.md",
+  "/SECURITY.md",
+  "/SUPPORT.md",
+  "/pyproject.toml",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+ignore = ["E402", "E501"]
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

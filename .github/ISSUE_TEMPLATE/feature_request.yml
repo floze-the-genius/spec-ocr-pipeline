@@ -1,0 +1,86 @@
+name: Feature request
+description: Propose a focused improvement to Spec OCR Pipeline.
+title: "[Feature]: "
+labels:
+  - enhancement
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Explain the user problem before the proposed implementation. Do not attach real business documents, private outputs, credentials, or proprietary templates; use synthetic examples.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What workflow is difficult or impossible today, and who benefits from solving it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe the desired user-facing behavior, inputs, outputs, and failure mode.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Primary area
+      options:
+        - OCR or PDF extraction
+        - AI mapping or validation
+        - Normalized schema
+        - Excel or template export
+        - CLI or automation
+        - Local models or runtimes
+        - Windows or WSL
+        - macOS
+        - Linux
+        - Packaging or installation
+        - Documentation or contributor experience
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Synthetic example
+      description: Show a minimal invented input and expected output, command, or API shape.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe current workarounds or simpler alternatives.
+
+  - type: textarea
+    id: platform_impact
+    attributes:
+      label: Platform and dependency impact
+      description: Identify affected operating systems, providers, models, hardware, downloads, or optional dependencies.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to help implement or test this feature.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and requests for this proposal.
+          required: true
+        - label: This request contains no credentials, private documents, personal data, or proprietary content.
+          required: true

@@ -1,0 +1,141 @@
+name: Bug report
+description: Report a reproducible defect using sanitized or synthetic data.
+title: "[Bug]: "
+labels:
+  - bug
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Never attach credentials, authentication exports, real client documents, private OCR output, or unredacted logs. Use a synthetic reproducer and remove personal paths and document content.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Provide the release version or full commit SHA you tested.
+      placeholder: "0.1.0 or a commit SHA"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation
+    attributes:
+      label: Installation method
+      options:
+        - Editable install from a source checkout
+        - Wheel or source distribution
+        - GitHub release archive
+        - Windows setup scripts
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating_system
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform details
+      description: Include OS version, architecture, distribution where applicable, and whether WSL was used.
+      placeholder: "Windows 11 x64 with WSL2, macOS arm64, or Ubuntu 24.04 x86_64"
+    validations:
+      required: true
+
+  - type: input
+    id: python_version
+    attributes:
+      label: Python version
+      placeholder: "3.11.9"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - CLI or orchestration
+        - PDF text extraction
+        - Tesseract OCR
+        - PaddleOCR-VL
+        - dots.mocr
+        - AI mapping with OpenCode
+        - AI mapping with MLX
+        - AI mapping with an OpenAI-compatible backend
+        - Excel export
+        - Windows or WSL setup
+        - Local model management
+        - Tests or packaging
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: command
+    attributes:
+      label: Command
+      description: Paste the smallest command that reproduces the problem. Replace private paths and endpoint details.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead? Include the exact sanitized error message.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Use a synthetic or otherwise redistributable input and list each step from a clean environment.
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized diagnostics
+      description: Optionally include relevant `spec-ocr doctor --json` output and logs after removing document content, credentials, usernames, and private paths.
+      render: shell
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: Name the OCR provider, AI backend, model, runtime, accelerator, and dependency extra when relevant.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues for this problem.
+          required: true
+        - label: I removed credentials, authentication data, personal information, private paths, and confidential document content.
+          required: true
+        - label: Every attachment is synthetic or otherwise licensed and safe for public redistribution.
+          required: true

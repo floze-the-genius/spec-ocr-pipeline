@@ -1,0 +1,53 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+.venv-windows-bootstrap/
+.windows-python/
+.venv-wsl/
+venv/
+dist/
+build/
+.coverage
+htmlcov/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+**/auth.json
+**/credentials.json
+
+# Local artifacts
+tmp/
+output/
+artifacts/
+deliverables/
+logs/
+run-local-qwen-server.cmd
+INPUT_PDF/*
+!INPUT_PDF/README.txt
+OUTPUT_RESULTS/*
+!OUTPUT_RESULTS/README.txt
+
+# Credentials and authentication exports stay private and are never distributed.
+customer-secrets/
+.customer-secrets/
+*.auth.json
+.private/
+
+# Customer utility binaries are kept local, not versioned.
+Examples/*.exe
+tools/windows/*.exe
+tools/windows/downloaded-*
+tools/windows/wheelhouse/
+tools/windows/python-*-embed-*.zip
+
+# Editors
+.idea/
+.vscode/
